@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'cat-food'
+    orgId: 1
+    folder: 'Cat Food Metrics'
+    type: file
+    disableDeletion: true
+    editable: false
+    options:
+      path: /etc/grafana/provisioning/dashboards

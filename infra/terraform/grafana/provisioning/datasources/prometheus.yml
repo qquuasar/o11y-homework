@@ -1,22 +1,11 @@
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+apiVersion: 1
 
-scrape_configs:
-  - job_name: 'cat-food-service'
-    metrics_path: /metrics
-    static_configs:
-      - targets: ['service:8000']
-
-  - job_name: 'postgresql'
-    static_configs:
-      - targets: ['postgres-exporter:9187']
-
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets: ['alertmanager:9093']
-
-rule_files:
-  - /etc/prometheus/alerts.yml
-
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    version: 1
+    tlsSkipVerify: true

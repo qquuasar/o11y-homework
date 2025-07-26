@@ -28,7 +28,7 @@
 ## Быстрый старт
 
 ```bash
-git clone <репозиторий>
+git clone https://github.com/qquuasar/o11y-homework
 cd o11y-homework
 
 # Поднять весь стек

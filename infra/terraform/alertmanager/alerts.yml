@@ -1,0 +1,43 @@
+groups:
+  - name: catfood-latency
+    rules:
+      - alert: HighP99Latency
+        expr: |
+          histogram_quantile(
+            0.99,
+            sum(
+              rate(app_request_latency_seconds_bucket{endpoint!="/metrics"}[1m])
+            ) by (le)
+          ) > 0.5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "p99 latency > 500ms"
+          description: "Текущая p99 latency: {{ $value }}s"
+
+  - name: test-alert
+    rules:
+      - alert: TestAlert
+        expr: vector(1)
+        for: 10s
+        labels:
+          severity: test
+        annotations:
+          summary: "Cat food сервис стартовал"
+          description: "Тестовый алерт: сервис успешно запущен, интеграция с Telegram работает."
+
+  - name: postgres-rps
+    rules:
+      - alert: HighPostgresRPS
+        expr: |
+          sum(
+            rate(pg_stat_database_xact_commit{datname="o11y"}[1m])
+          + rate(pg_stat_database_xact_rollback{datname="o11y"}[1m])
+          ) by (datname) > 100
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Postgres RPS > 100"
+          description: "Postgres trans/sec: {{ $value }}"

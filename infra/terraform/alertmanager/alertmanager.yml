@@ -1,0 +1,22 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'telegram'
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 1h
+
+receivers:
+- name: 'telegram'
+  telegram_configs:
+  - send_resolved: true
+    bot_token: "7652179771:AAH3Em9fJHnPn-SKd_jxF0O3WC8gVQuyyjE"
+    chat_id: -1002800658263
+    parse_mode: "HTML"
+    message: |
+      🚨 <b>ALERT:</b> {{ .CommonLabels.alertname }}
+      🔥 <b>Summary:</b> {{ .CommonAnnotations.summary }}
+      📋 <b>Description:</b> {{ .CommonAnnotations.description }}
+      🕒 <b>Time:</b> {{ .StartsAt }}

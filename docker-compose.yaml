@@ -35,11 +35,13 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./infra/terraform/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/terraform/alertmanager/alerts.yml:/etc/prometheus/alerts.yml:ro
     ports:
       - "9090:9090"
     depends_on:
       - service
       - postgres-exporter
+      - alertmanager
 
   locust:
     build: ./locust
@@ -59,6 +61,14 @@ services:
       - ./infra/terraform/grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - prometheus
+  alertmanager:
+    image: prom/alertmanager:latest
+    volumes:
+      - ./infra/terraform/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./infra/terraform/alertmanager/alerts.yml:/etc/alertmanager/alerts.yml:ro
+    ports:
+      - "9093:9093"
+
 
 volumes:
   db-data:

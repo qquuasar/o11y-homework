@@ -18,5 +18,5 @@ alerting:
         - targets: ['alertmanager:9093']
 
 rule_files:
-  # Здесь именно путь внутри контейнера Prometheus
-  - '/etc/prometheus/alerts.yml'
+  - /etc/prometheus/alerts.yml
+

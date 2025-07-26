@@ -4,6 +4,7 @@ from locust import HttpUser, task, between
 import random
 
 class CatFoodUser(HttpUser):
+    host = "http://service:8000"
     wait_time = between(1, 2)
     # Гарантируем, что атрибут есть даже до on_start
     product_ids: list[int] = []

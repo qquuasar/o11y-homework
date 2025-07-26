@@ -14,6 +14,14 @@ from sqlalchemy.orm import sessionmaker, relationship, Session
 from prometheus_client import (
     Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 )
+from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+
 
 # -------------------------
 #     Метрики Prometheus
@@ -132,7 +140,21 @@ class OrderCreate(BaseModel):
 # -------------------------
 #       FastAPI App
 # -------------------------
+# 1. Настраиваем провайдер трасс и ресурс
+resource = Resource.create({"service.name": "cat-food-service"})
+provider = TracerProvider(resource=resource)
+trace.set_tracer_provider(provider)
+
+# 2. Настраиваем экспортёр в Jaeger
+jaeger_exporter = JaegerExporter(
+    agent_host_name=os.getenv("JAEGER_AGENT_HOST", "localhost"),
+    agent_port=int(os.getenv("JAEGER_AGENT_PORT", 6831)),
+)
+provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))
+
+# 3. Создаём FastAPI и инструментируем
 app = FastAPI(title="Cat Food Store (o11y)")
+FastAPIInstrumentor.instrument_app(app)
 
 # Dependency: DB session
 def get_db():

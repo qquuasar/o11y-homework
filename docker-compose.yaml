@@ -5,11 +5,14 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - jaeger
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: o11y
       DB_HOST: db
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
 
   db:
     image: postgres:15
@@ -68,6 +71,13 @@ services:
       - ./infra/terraform/alertmanager/alerts.yml:/etc/alertmanager/alerts.yml:ro
     ports:
       - "9093:9093"
+  
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"    # OTLP/Thrift для спанов
+      - "16686:16686"      # UI
+
 
 
 volumes:
